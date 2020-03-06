@@ -240,6 +240,12 @@ class Graph:
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
+        hamiltonian=Walk(self.totalVertices())
+        self.tryVisiting(0, 0, hamiltonian)
+
+        if(hamiltonian.isCircuit()):
+            return hamiltonian
+
         return None
     
 
@@ -258,5 +264,10 @@ class Graph:
 
         Returns True iff a Hamiltonian circuit has been found and False otherwise
         """
+        if(totalvisited >= self.totalVertices()):
+            return True
+
+        totalvisited+=1
+        Hamiltonian
         return False
     

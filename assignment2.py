@@ -23,9 +23,14 @@ def getHamiltonian(graph,start,end):
     
 
 
-    def hamiltonianPath(walk, toVisit, unvisited, backFrom=None):
+    def hamiltonianPath(walk, toVisit, unvisited, backFrom=[]):
+        
         print("Walk: "+str(walk)+" toVisit: "+str(toVisit)+" unvisited: "+str(unvisited)+" backfrom: "+str(backFrom))
-
+        if backFrom:
+            x=backFrom[len(backFrom)-1]
+            for option in adjacencies[x]:
+                if option in backFrom:
+                    backFrom.remove(option)
         #base case success
         if unvisited==[] and len(walk)==max(walk)+1:
             return walk
@@ -35,15 +40,16 @@ def getHamiltonian(graph,start,end):
         
 
         #if the next vertex to travel to is connected, lets go there, else we have to backtrack
-        if toVisit[0] in adjacencies[walk[len(walk)-1]]:
+        if toVisit[0] in adjacencies[walk[len(walk)-1]] and toVisit[0] not in backFrom:
             x= toVisit.pop(0)
-            if x==backFrom:
+            if x in backFrom:
                 toVisit.append(x)
                 return (hamiltonianPath(walk,toVisit,unvisited))
         else:
-            backFrom=walk.pop()
-            toVisit.append(backFrom)
-            unvisited.append(backFrom)
+            x=walk.pop()
+            backFrom.append(x)
+            toVisit.append(x)
+            unvisited.append(x)
             print("Dead end, backtracking")
             return(hamiltonianPath(walk, toVisit,unvisited,backFrom))
 
@@ -60,8 +66,10 @@ def getHamiltonian(graph,start,end):
         if x in toVisit:
             toVisit=list(filter(lambda a: a!=x,toVisit))
         for option in adjacencies[x]:
-            if option in unvisited and option not in walk and option != backFrom:
+            if option in unvisited and option not in walk and option not in backFrom:
                 toVisit.insert(0,option)
+                backFrom=[]
+        
         return (hamiltonianPath(walk, toVisit,unvisited))
 
 

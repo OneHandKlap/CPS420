@@ -9,13 +9,7 @@ def main():
   """
   
   # Run test files
-  
   dirPath = "./tests/"
-  score=0
-  result = testInput(dirPath + "custom", 2)
-  score += result
-  print("Score so far: " + str(score))
-  '''
   result = testInput(dirPath + "disconnected", 0)
   score = 4 - result
   print("Score so far: " + str(score))
@@ -27,11 +21,11 @@ def main():
   result = testInput(dirPath + "nohamiltonian", 0)
   score += 4 - result
   print("Score so far: " + str(score))
-
+ 
   result = testInput(dirPath + "hashamiltonian", 5)
   score += result
   print("Score so far: " + str(score))
-  
+  '''
   result = testInput(dirPath + "large", 6)
   score += result
   print("Score so far: " + str(score))
@@ -43,7 +37,7 @@ def main():
   result = testInput(dirPath + "onethousand", 1)
   score += 4*result
   print("Score so far: " + str(score) + " out of 40.")
-
+  '''
 
   # Test random graphs
   # Will be added during grading
@@ -52,7 +46,7 @@ def main():
   
   # Print final score   
   print("The final 10 marks will be calculated \nby running additional tests on five random graphs.")
-  '''
+
 
 def testInput(filename, expected):
   """

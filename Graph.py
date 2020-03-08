@@ -242,10 +242,10 @@ class Graph:
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
+        #for i in range(self.totalVertices()):
         hamiltonian = Walk(self.totalVertices()+1)
-        self.tryVisiting(0, 0, hamiltonian)
 
-        if(hamiltonian.isCircuit()):
+        if( self.tryVisiting(0, 0, hamiltonian) and hamiltonian.isCircuit()):
             return hamiltonian
 
         return None
@@ -275,24 +275,27 @@ class Graph:
                 self.visitedV[vertex] = True
                 Hamiltonian.addVertex(vertex)
                 Hamiltonian.addVertex(Hamiltonian.getVertex(0))
-
                 return True
             else:
                 return False
         else:
             self.visitedV[vertex] = True
             Hamiltonian.addVertex(vertex)
-        # 0 2 1 3 5 4 0
-        # Case for first visited
-        # if(totalvisited == 0):
 
         # Recurse through neighbors and see if a solution is created
         for i in range(self.totalV):
             # check if vertex is present in path
             if self.edges[vertex][i] != 0 and not self.visitedV[i]:
+                print("VISITING " + str(i) + " FROM " + str(vertex))
                 # if it produces a solution break
                 if(self.tryVisiting(i, totalvisited+1, Hamiltonian)) == True:
                     return True
+                else:
+                    print("BACKTRACKING")
+                #else:
+                #    print("BACKTRACKING")
+                #    while(len(Hamiltonian) > totalvisited):
+                #        Hamiltonian.removeLastVertex()
             
             if(self.edges[vertex][i] != 0 and i == Hamiltonian.getVertex(0)) and totalvisited == self.totalV-1:
                 if(self.tryVisiting(i, totalvisited+1, Hamiltonian)) == True:

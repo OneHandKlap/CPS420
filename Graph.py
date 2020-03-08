@@ -268,6 +268,19 @@ class Graph:
             return True
 
         totalvisited+=1
+        if self.addVertex(vertex):
+
+        else:
+
         Hamiltonian
+
+        self.tryVisiting(vertex + 1, totalvisited+1, Hamiltonian)
         return False
     
+    # Perform DFS on vertex 
+    # Add each vertex to walk 
+    # If vertex is already in walk
+    # Remove it
+    # Call function on neighbor
+    # If walk is a circuit and contains all vertices, return it
+    # Else go through the vertex's neighbor

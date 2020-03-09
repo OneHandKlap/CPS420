@@ -10,8 +10,6 @@ def main():
   
   # Run test files
   dirPath = "./tests/"
-  score = 0;
-  '''
   result = testInput(dirPath + "disconnected", 0)
   score = 4 - result
   print("Score so far: " + str(score))
@@ -23,11 +21,11 @@ def main():
   result = testInput(dirPath + "nohamiltonian", 0)
   score += 4 - result
   print("Score so far: " + str(score))
-  '''
+
   result = testInput(dirPath + "hashamiltonian", 5)
   score += result
   print("Score so far: " + str(score))
-  '''
+  
   result = testInput(dirPath + "large", 6)
   score += result
   print("Score so far: " + str(score))
@@ -39,7 +37,6 @@ def main():
   result = testInput(dirPath + "onethousand", 1)
   score += 4*result
   print("Score so far: " + str(score) + " out of 40.")
-  '''
 
   # Test random graphs
   # Will be added during grading

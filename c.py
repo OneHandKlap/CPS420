@@ -11,7 +11,7 @@ def main():
   dirPath = "./tests/"
   score = 0;
   
-  result = testInput(dirPath + "custom", 1)
+  result = testInput(dirPath + "u6", 1)
   score += result
   print("Score so far: " + str(score))
  

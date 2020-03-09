@@ -40,8 +40,7 @@ class Graph:
                 if row == 0:
                     entries = line.split()
                     if len(entries) != 2:
-                        print(
-                            "Error: First line of graph must have format 'D'|'U' TotalVertices")
+                        #print("Error: First line of graph must have format 'D'|'U' TotalVertices")
                         break
                     if entries[0] == 'U':
                         directed = Graph.UNDIRECTED
@@ -53,7 +52,7 @@ class Graph:
                 elif row <= vertices:
                     newrow = [int(i) for i in line.split()]
                     if len(newrow) != vertices:
-                        print("Error: invalid number of entries in row " + row)
+                        #print("Error: invalid number of entries in row " + row)
                         break
                     edges.append(newrow)
                     row += 1
@@ -78,10 +77,10 @@ class Graph:
         """
 
         if vertices <= 0:
-            print("Error: Number of vertices must be positive")
+            #print("Error: Number of vertices must be positive")
             return None
         if density <= 1:
-            print("Error: density must be greater than 1")
+            #print("Error: density must be greater than 1")
             return None
         # Seed the random number generator once
         if not Graph.seeded:
@@ -118,7 +117,7 @@ class Graph:
         self.inputMistakes = False
         self.directed = directed
         if vertices <= 0:
-            print("Error: Number of vertices must be positive")
+            #print("Error: Number of vertices must be positive")
             return
 
         # Total number of vertices and edges.
@@ -148,7 +147,7 @@ class Graph:
         for i in range(vertices):
             for j in range(vertices):
                 if edges[i][j] < 0:
-                    print("Error: Number of edges cannot be negative")
+                    #print("Error: Number of edges cannot be negative")
                     self.inputMistakes = True
                 elif directed or j >= i:
                     self.totalE += edges[i][j]
@@ -158,7 +157,7 @@ class Graph:
             for i in range(vertices):
                 for j in range(i+1, vertices):
                     if edges[i][j] != edges[j][i]:
-                        print("Error: adjacency matrix is not symmetric")
+                        #print("Error: adjacency matrix is not symmetric")
                         self.inputMistakes = True
         if self.inputMistakes:
             self.totalV = 0
@@ -242,83 +241,17 @@ class Graph:
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
+
+        if(self.totalV < 3):
+            return None
+
         # for i in range(self.totalVertices()):
         hamiltonian = Walk(self.totalVertices()+1)
+        
+        available = [True] * self.totalV
 
-        if(self.tryVisiting(0, 0, hamiltonian) and hamiltonian.isCircuit()):
-            return hamiltonian
-
-        return None
-
-    def tryVdddisiting(self, vertex, totalvisited, Hamiltonian):
-        """
-        Recursive backtracking algorithm tries visiting adjacent unvisited vertices one by one
-        building a Hamiltonian circuit along the way.
-
-        Parameters:
-            int vertex: vertex being visited for the first time
-            int totalvisited: total number of vertices visited so far
-            Walk Hamiltonian: Hamiltonian Walk built so far
-
-        Side Effects:
-            Hamiltonian is modified
-
-        Returns True iff a Hamiltonian circuit has been found and False otherwise
-        """
-        print("CURRENT VERTEX " + str(vertex))
-        # Base Case, if all the vertices have been visited
-        if(totalvisited == self.totalV):
-            print("BASE")
-            print(str(Hamiltonian.getVertex(len(Hamiltonian))) +
-                  " " + str(Hamiltonian.getVertex(0)))
-            # Check to see that the last visited is adjacent to first visited
-            if self.edges[Hamiltonian.getVertex(len(Hamiltonian))][Hamiltonian.getVertex(0)]:
-                self.visitedV[vertex] = True
-                Hamiltonian.addVertex(vertex)
-                Hamiltonian.addVertex(Hamiltonian.getVertex(0))
-                return True
-            else:
-                return False
-        else:
-            self.visitedV[vertex] = True
-            Hamiltonian.addVertex(vertex)
-
-        print(Hamiltonian)
-
-        # Recurse through neighbors and see if a solution is created
-        for i in range(self.totalV):
-            # check if vertex is present in path
-            if self.edges[vertex][i] != 0 and not self.visitedV[i]:
-                print("VISITING " + str(i) + " FROM " + str(vertex))
-                # if it produces a solution break
-                if(self.tryVisiting(i, totalvisited+1, Hamiltonian)) == True:
-                    return True
-                else:
-                    print("BACKTRACKING")
-                    while(len(Hamiltonian) > totalvisited):
-                        print()
-                        Hamiltonian.removeLastVertex()
-
-            if(self.edges[vertex][i] != 0 and i == Hamiltonian.getVertex(0)) and totalvisited == self.totalV-1:
-                if(self.tryVisiting(i, totalvisited+1, Hamiltonian)) == True:
-                    return True
-
-        return False
-
-    def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
-        if(totalvisited == self.visitedV):
-            if(self.edges[vertex][Hamiltonian.getVertex(0)]):
-                Hamiltonian.addVertex(vertex)
-                Hamiltonian.addVertex(0)
-                self.visitedV[vertex] = True
-                return True
-            else:
-                return False
-
-        if available == []:
-            available = [True] * self.totalV
-
-       
+        #print("GENERATING ADJACENCIES")
+        adjacencies={}  
         for elem in range(len(available)):
             acc = []
             for index in range(self.totalV):
@@ -326,28 +259,55 @@ class Graph:
                     acc.append(index)
                 if(len(acc) > 0):
                     adjacencies[elem] = acc
+        #print(adjacencies)
+    
+        if(self.tryVisiting(0, 0, hamiltonian, available, adjacencies) and hamiltonian.isCircuit()):
+            return hamiltonian
 
-        Hamiltonian.addVertex(vertex)
-        self.visitedV[vertex] = True
-        available[vertex] = False
+        return None
 
-        #print("AVAILABLE " + available)
-        print("CURRENT VERTEX " + str(vertex))
-        #print("AVAILABLE " + str(available))
-        toPop = list(filter(lambda x : available[x], adjacencies[vertex])) 
-        while(toPop != []):
-            popped=toPop.pop(0)
-
-            print("POPPED " + str(popped))
-            print("TwoPop " + str(toPop))
-            print(adjacencies)
-            if(available[popped] and self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies)):
+    def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
+        if(totalvisited == len(self.visitedV)):
+            #print("BASE")
+            if(vertex==Hamiltonian.getVertex(0)):
+                Hamiltonian.addVertex(vertex)
                 return True
             else:
-                print("BACKTRACKING")
-                #available[popped] = True
-                #toPop.append(popped)
-                
+                return False
 
-        #available[vertex] = True
+        if(available[vertex]):
+            Hamiltonian.addVertex(vertex)
+            self.visitedV[vertex] = True
+            available[vertex] = False
+        else:
+            return False
+
+        #print("CURRENT VERTEX " + str(vertex))
+        #print(Hamiltonian)
+        topop=list(adjacencies[vertex])
+        for i in range(len(topop)):
+            popped=topop.pop(0)
+            #print("POPPED " + str(popped))
+            #print("TOPOP " + str(topop))
+            #print("ADJACENCIES " + str(adjacencies))
+            #print("LENGTH " + str(len(Hamiltonian)+1    ))
+            if available[popped] or (popped == Hamiltonian.getVertex(0) and len(Hamiltonian) + 1 == self.totalV):
+                if self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies):
+                    return True
+                else:
+                    #print("BACKTRACKING")   
+                    available[popped] = True
+                    #Hamiltonian.removeVertex(popped)
+                    Hamiltonian.removeLastVertex()
+                    topop.append(popped)
+                    #print("ADDING BACK " + str(popped) + " FROM " + str(vertex))
+                    self.visitedV[popped] = False
+                    #if(i == len(adjacencies[vertex])):
+                     #   #print("ALL THE WAY BACK")
+                    #self.tryVisiting(popped, totalvisited-i, Hamiltonian, available, adjacencies)
+            #print(Hamiltonian)
+
+        available[vertex] = True
+        self.visitedV[vertex] = False
+ 
         return False

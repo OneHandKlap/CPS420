@@ -18,10 +18,10 @@ class Graph:
     def fromFile(cls, filename):
         """
         Instantiates list of Graphs read from a file.  The file has the following format:
-            Each graph starts on a new line which contains two elements: 
+            Each graph starts on a new line which contains two elements:
                 - "D" or "U" to specify whether the graph is directed or undirected
                 - The number of vertices in that graph
-            Followed by one line for each row of the adjacency matrix of the graph: 
+            Followed by one line for each row of the adjacency matrix of the graph:
                 in each row the elements are separated by blanks.
 
         Note: When it encounters problems with the data, fromFile stops reading the file and
@@ -30,7 +30,7 @@ class Graph:
         Parameters:
             str filename: name of file containing graphs
 
-        Returns a list of Graphs described in the file. 
+        Returns a list of Graphs described in the file.
         """
         f = open(filename, "r")
         graphList = []
@@ -242,15 +242,15 @@ class Graph:
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
-        #for i in range(self.totalVertices()):
+        # for i in range(self.totalVertices()):
         hamiltonian = Walk(self.totalVertices()+1)
 
-        if( self.tryVisiting(0, 0, hamiltonian) and hamiltonian.isCircuit()):
+        if(self.tryVisiting(0, 0, hamiltonian) and hamiltonian.isCircuit()):
             return hamiltonian
 
         return None
 
-    def tryVisiting(self, vertex, totalvisited, Hamiltonian):
+    def tryVdddisiting(self, vertex, totalvisited, Hamiltonian):
         """
         Recursive backtracking algorithm tries visiting adjacent unvisited vertices one by one
         building a Hamiltonian circuit along the way.
@@ -265,11 +265,12 @@ class Graph:
 
         Returns True iff a Hamiltonian circuit has been found and False otherwise
         """
-        print(Hamiltonian)
+        print("CURRENT VERTEX " + str(vertex))
         # Base Case, if all the vertices have been visited
         if(totalvisited == self.totalV):
             print("BASE")
-            print(str(Hamiltonian.getVertex(len(Hamiltonian))) + " " + str(Hamiltonian.getVertex(0)))
+            print(str(Hamiltonian.getVertex(len(Hamiltonian))) +
+                  " " + str(Hamiltonian.getVertex(0)))
             # Check to see that the last visited is adjacent to first visited
             if self.edges[Hamiltonian.getVertex(len(Hamiltonian))][Hamiltonian.getVertex(0)]:
                 self.visitedV[vertex] = True
@@ -282,6 +283,8 @@ class Graph:
             self.visitedV[vertex] = True
             Hamiltonian.addVertex(vertex)
 
+        print(Hamiltonian)
+
         # Recurse through neighbors and see if a solution is created
         for i in range(self.totalV):
             # check if vertex is present in path
@@ -292,21 +295,59 @@ class Graph:
                     return True
                 else:
                     print("BACKTRACKING")
-                #else:
-                #    print("BACKTRACKING")
-                #    while(len(Hamiltonian) > totalvisited):
-                #        Hamiltonian.removeLastVertex()
-            
+                    while(len(Hamiltonian) > totalvisited):
+                        print()
+                        Hamiltonian.removeLastVertex()
+
             if(self.edges[vertex][i] != 0 and i == Hamiltonian.getVertex(0)) and totalvisited == self.totalV-1:
                 if(self.tryVisiting(i, totalvisited+1, Hamiltonian)) == True:
                     return True
 
-
         return False
-    # Perform DFS on vertex
-    # Add each vertex to walk
-    # If vertex is already in walk
-    # Remove it
-    # Call function on neighbor
-    # If walk is a circuit and contains all vertices, return it
-    # Else go through the vertex's neighbor
+
+    def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
+        if(totalvisited == self.visitedV):
+            if(self.edges[vertex][Hamiltonian.getVertex(0)]):
+                Hamiltonian.addVertex(vertex)
+                Hamiltonian.addVertex(0)
+                self.visitedV[vertex] = True
+                return True
+            else:
+                return False
+
+        if available == []:
+            available = [True] * self.totalV
+
+       
+        for elem in range(len(available)):
+            acc = []
+            for index in range(self.totalV):
+                if self.edges[elem][index] == 1 and elem != index:
+                    acc.append(index)
+                if(len(acc) > 0):
+                    adjacencies[elem] = acc
+
+        Hamiltonian.addVertex(vertex)
+        self.visitedV[vertex] = True
+        available[vertex] = False
+
+        #print("AVAILABLE " + available)
+        print("CURRENT VERTEX " + str(vertex))
+        #print("AVAILABLE " + str(available))
+        toPop = list(filter(lambda x : available[x], adjacencies[vertex])) 
+        while(toPop != []):
+            popped=toPop.pop(0)
+
+            print("POPPED " + str(popped))
+            print("TwoPop " + str(toPop))
+            print(adjacencies)
+            if(available[popped] and self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies)):
+                return True
+            else:
+                print("BACKTRACKING")
+                #available[popped] = True
+                #toPop.append(popped)
+                
+
+        #available[vertex] = True
+        return False

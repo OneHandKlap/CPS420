@@ -7,39 +7,14 @@ def main():
   It first tests the getHamiltonian method on graphs in test files.
   Then tests it on randomly generated undirected simple graphs.
   """
-  
   # Run test files
   dirPath = "./tests/"
   score = 0;
-  '''
-  result = testInput(dirPath + "disconnected", 0)
-  score = 4 - result
-  print("Score so far: " + str(score))
   
-  result = testInput(dirPath + "toosmall", 0)
-  score += 2 - result
-  print("Score so far: " + str(score))
-  
-  result = testInput(dirPath + "nohamiltonian", 0)
-  score += 4 - result
-  print("Score so far: " + str(score))
-  '''
-  result = testInput(dirPath + "hashamiltonian", 5)
-  score += result
-  print("Score so far: " + str(score))
-  '''
-  result = testInput(dirPath + "large", 6)
+  result = testInput(dirPath + "custom", 1)
   score += result
   print("Score so far: " + str(score))
  
-  result = testInput(dirPath + "verylarge", 5)
-  score += result
-  print("Score so far: " + str(score))
-  
-  result = testInput(dirPath + "onethousand", 1)
-  score += 4*result
-  print("Score so far: " + str(score) + " out of 40.")
-  '''
 
   # Test random graphs
   # Will be added during grading

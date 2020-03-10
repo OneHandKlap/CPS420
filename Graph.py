@@ -3,6 +3,7 @@ import sys
 import random
 sys.setrecursionlimit(1500)
 
+
 class Graph:
     """
     Graph objects can be used to work with undirected graphs.
@@ -12,25 +13,25 @@ class Graph:
     DIRECTED = True
     UNDIRECTED = False
     seeded = False
-	  
+
     @classmethod
     def fromFile(cls, filename):
         """
-	Instantiates list of Graphs read from a file.  The file has the following format:
-            Each graph starts on a new line which contains two elements: 
+        Instantiates list of Graphs read from a file.  The file has the following format:
+            Each graph starts on a new line which contains two elements:
                 - "D" or "U" to specify whether the graph is directed or undirected
                 - The number of vertices in that graph
-            Followed by one line for each row of the adjacency matrix of the graph: 
+            Followed by one line for each row of the adjacency matrix of the graph:
                 in each row the elements are separated by blanks.
-	
-	Note: When it encounters problems with the data, fromFile stops reading the file and
-	returns the correct information read up to that point.
-	 
-	Parameters:
+
+        Note: When it encounters problems with the data, fromFile stops reading the file and
+        returns the correct information read up to that point.
+
+        Parameters:
             str filename: name of file containing graphs
-	
-	Returns a list of Graphs described in the file. 
-	"""
+
+        Returns a list of Graphs described in the file.
+        """
         f = open(filename, "r")
         graphList = []
         with f as lines:
@@ -39,9 +40,9 @@ class Graph:
                 if row == 0:
                     entries = line.split()
                     if len(entries) != 2:
-                        print("Error: First line of graph must have format 'D'|'U' TotalVertices")
+                        #print("Error: First line of graph must have format 'D'|'U' TotalVertices")
                         break
-                    if entries[0]=='U':
+                    if entries[0] == 'U':
                         directed = Graph.UNDIRECTED
                     else:
                         directed = Graph.DIRECTED
@@ -51,7 +52,7 @@ class Graph:
                 elif row <= vertices:
                     newrow = [int(i) for i in line.split()]
                     if len(newrow) != vertices:
-                        print("Error: invalid number of entries in row " + row)
+                        #print("Error: invalid number of entries in row " + row)
                         break
                     edges.append(newrow)
                     row += 1
@@ -60,26 +61,26 @@ class Graph:
                     row = 0
         f.close()
         return graphList
-    
+
     @classmethod
     def newRandomSimple(cls, seed, vertices, density):
         """
-	Instantiates new simple Graph randomly as specified by parameters.
-	The graph is undirected without loops or parallel edges.
-	 
-	Parameters:
+        Instantiates new simple Graph randomly as specified by parameters.
+        The graph is undirected without loops or parallel edges.
+
+        Parameters:
             int seed: seed for random number generator
             int vertices: number of vertices in the Graph
             int density: the odds that there will be an edge between any two distinct vertices are 1/density
 
-	Returns a new graph to specifications or None if they can't be met.
-	"""
+        Returns a new graph to specifications or None if they can't be met.
+        """
 
         if vertices <= 0:
-            print("Error: Number of vertices must be positive")
+            #print("Error: Number of vertices must be positive")
             return None
         if density <= 1:
-            print("Error: density must be greater than 1")
+            #print("Error: density must be greater than 1")
             return None
         # Seed the random number generator once
         if not Graph.seeded:
@@ -93,70 +94,70 @@ class Graph:
 
         # Populate non-diagonal cells of matrix
         for i in range(vertices):
-            for j in range(i+1,vertices):
-                if random.randint(0, density-1) == density-1:                
+            for j in range(i+1, vertices):
+                if random.randint(0, density-1) == density-1:
                     edges[i][j] = 1
                 edges[j][i] = edges[i][j]
         return Graph(Graph.UNDIRECTED, vertices, edges)
 
     def __init__(self, directed, vertices, edges):
         """Creates a new Graph from an adjacency matrix
-	
-	Parameters:
+
+        Parameters:
             Boolean directed: Graph.DIRECTED or Graph.UNDIRECTED
             int vertices: number of vertices in the Graph
             List edges: adjacency matrix of the edges
-	
-	Notes:
-	- This constructor is not intended to be used directly.
-	  The two class methods fromFile and newRandomSimple should be used instead.
-	- Nevertheless, if incorrect data is received, the graph information will be rejected
+
+        Notes:
+        - This constructor is not intended to be used directly.
+          The two class methods fromFile and newRandomSimple should be used instead.
+        - Nevertheless, if incorrect data is received, the graph information will be rejected
           and an empty graph will be returned.
-	"""
+        """
         self.inputMistakes = False
         self.directed = directed
         if vertices <= 0:
-            print("Error: Number of vertices must be positive")
+            #print("Error: Number of vertices must be positive")
             return
-        
+
         # Total number of vertices and edges.
         self.totalV = vertices
         self.totalE = 0
-        
+
         # Adjacency matrix of graph.
         # edges[x][y] is the number of edges from vertex x to vertex y.
         self.edges = edges
-        
+
         # Used by graph visitors to keep track of visited vertices.
         self.visitedV = [None]*vertices
-        
+
         # Used by graph visitors to keep track of visited edges.
         self.visitedE = []
-        
+
         # Used by graph visitors to keep track of unvisited edges
         # as an alternative to using visitedE.
         self.unvisitedE = []
-        
+
         for i in range(vertices):
             self.visitedE.append(([None]*vertices).copy())
             self.unvisitedE.append(([None]*vertices).copy())
         self.clearVisited()
-        
+
         # Read adjacency matrix
         for i in range(vertices):
             for j in range(vertices):
                 if edges[i][j] < 0:
-                    print("Error: Number of edges cannot be negative")
+                    #print("Error: Number of edges cannot be negative")
                     self.inputMistakes = True
                 elif directed or j >= i:
                     self.totalE += edges[i][j]
-        
+
         # Verify that adjacency matrix is symmetric when graph is undirected
         if not directed:
             for i in range(vertices):
                 for j in range(i+1, vertices):
                     if edges[i][j] != edges[j][i]:
-                        print("Error: adjacency matrix is not symmetric")
+                        #print("Error: adjacency matrix is not symmetric")
                         self.inputMistakes = True
         if self.inputMistakes:
             self.totalV = 0
@@ -234,29 +235,62 @@ class Graph:
 
     #                   DO NOT MODIFY FILE ABOVE THIS LINE
     #####################################  SOLUTION  ##########################################
-    
+
     def getHamiltonian(self):
         """
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
+
+        if(self.totalV < 3):
+            return None
+
+        hamiltonian = Walk(self.totalVertices()+1)
+        
+        available = [True] * self.totalV
+
+        adjacencies={}  
+        for elem in range(len(available)):
+            acc = []
+            for index in range(self.totalV):
+                if self.edges[elem][index] == 1 and elem != index:
+                    acc.append(index)
+                if(len(acc) > 0):
+                    adjacencies[elem] = acc
+    
+        if(self.tryVisiting(0, 0, hamiltonian, available, adjacencies) and hamiltonian.isCircuit()):
+            return hamiltonian
+
         return None
-    
 
-    def tryVisiting(self, vertex, totalvisited, Hamiltonian):
-        """
-        Recursive backtracking algorithm tries visiting adjacent unvisited vertices one by one
-        building a Hamiltonian circuit along the way.
+    def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
+        if(totalvisited == len(self.visitedV)):
+            if(vertex==Hamiltonian.getVertex(0)):
+                Hamiltonian.addVertex(vertex)
+                return True
+            else:
+                return False
 
-        Parameters:
-            int vertex: vertex being visited for the first time
-            int totalvisited: total number of vertices visited so far
-            Walk Hamiltonian: Hamiltonian Walk built so far
+        if(available[vertex]):
+            Hamiltonian.addVertex(vertex)
+            self.visitedV[vertex] = True
+            available[vertex] = False
+        else:
+            return False
 
-        Side Effects:
-            Hamiltonian is modified
+        topop=list(adjacencies[vertex])
+        for i in range(len(topop)):
+            popped=topop.pop(0)
+            if available[popped] or (popped == Hamiltonian.getVertex(0) and len(Hamiltonian) + 1 == self.totalV):
+                if self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies):
+                    return True
+                else:
+                    available[popped] = True
+                    Hamiltonian.removeLastVertex()
+                    topop.append(popped)
+                    self.visitedV[popped] = False
 
-        Returns True iff a Hamiltonian circuit has been found and False otherwise
-        """
+        available[vertex] = True
+        self.visitedV[vertex] = False
+ 
         return False
-    

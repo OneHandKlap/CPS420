@@ -245,12 +245,10 @@ class Graph:
         if(self.totalV < 3):
             return None
 
-        # for i in range(self.totalVertices()):
         hamiltonian = Walk(self.totalVertices()+1)
         
         available = [True] * self.totalV
 
-        #print("GENERATING ADJACENCIES")
         adjacencies={}  
         for elem in range(len(available)):
             acc = []
@@ -259,7 +257,6 @@ class Graph:
                     acc.append(index)
                 if(len(acc) > 0):
                     adjacencies[elem] = acc
-        #print(adjacencies)
     
         if(self.tryVisiting(0, 0, hamiltonian, available, adjacencies) and hamiltonian.isCircuit()):
             return hamiltonian
@@ -268,7 +265,6 @@ class Graph:
 
     def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
         if(totalvisited == len(self.visitedV)):
-            #print("BASE")
             if(vertex==Hamiltonian.getVertex(0)):
                 Hamiltonian.addVertex(vertex)
                 return True
@@ -282,30 +278,17 @@ class Graph:
         else:
             return False
 
-        #print("CURRENT VERTEX " + str(vertex))
-        #print(Hamiltonian)
         topop=list(adjacencies[vertex])
         for i in range(len(topop)):
             popped=topop.pop(0)
-            #print("POPPED " + str(popped))
-            #print("TOPOP " + str(topop))
-            #print("ADJACENCIES " + str(adjacencies))
-            #print("LENGTH " + str(len(Hamiltonian)+1    ))
             if available[popped] or (popped == Hamiltonian.getVertex(0) and len(Hamiltonian) + 1 == self.totalV):
                 if self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies):
                     return True
                 else:
-                    #print("BACKTRACKING")   
                     available[popped] = True
-                    #Hamiltonian.removeVertex(popped)
                     Hamiltonian.removeLastVertex()
                     topop.append(popped)
-                    #print("ADDING BACK " + str(popped) + " FROM " + str(vertex))
                     self.visitedV[popped] = False
-                    #if(i == len(adjacencies[vertex])):
-                     #   #print("ALL THE WAY BACK")
-                    #self.tryVisiting(popped, totalvisited-i, Hamiltonian, available, adjacencies)
-            #print(Hamiltonian)
 
         available[vertex] = True
         self.visitedV[vertex] = False

@@ -72,11 +72,11 @@ class Walk:
     if 0 <= n and n < self.totalV:
       return self.vertices[n]
     else:
-      return Walk.NOVERTEX
+      return "NOVERTEX"
     
   def getVertices(self):
     """ Returns a copy of the list of vertices in the Walk. """
-    return list(self.vertices)
+    return self.vertices.copy()
 
   def addVertex(self, vertex):
     """Adds another vertex to the end of the Walk if possible.
@@ -102,3 +102,24 @@ class Walk:
     self.vertices[self.totalV] = 0
     return True
 
+  def removeVertex(self, vertex):
+    """Removes the labelled vertex if possible
+    """
+    if self.totalV == 0:
+      return -1
+    
+    try:
+      for i in range(self.totalV):
+        if(self.vertices[i] == vertex):
+          print("REMOVE " + str(vertex))
+          print("INDEX " + str(i))
+          print(self.vertices)
+          self.totalV -= 1
+          saved=self.vertices[i]
+          self.vertices.pop(i)
+          return saved
+    except: 
+      None
+
+    return -1
+    

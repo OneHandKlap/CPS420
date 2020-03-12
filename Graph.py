@@ -234,7 +234,12 @@ class Graph:
 
     #                   DO NOT MODIFY FILE ABOVE THIS LINE
     #####################################  SOLUTION  ##########################################
-    
+    '''
+    Solution by:
+    Christian Wang - 500890567
+    P. Adam Aboud - 500883647
+
+    '''
     def getHamiltonian(self):
         """
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
@@ -245,7 +250,13 @@ class Graph:
             return None
 
         hamiltonian = Walk(self.totalVertices()+1)
-        
+    
+        if(self.tryVisiting(0, 0, hamiltonian) and hamiltonian.isCircuit()):
+            return hamiltonian
+
+        return None
+
+    def tryVisiting(self, vertex, totalvisited, Hamiltonian):
         available = [True] * self.totalV
 
         adjacencies={}  
@@ -256,41 +267,38 @@ class Graph:
                     acc.append(index)
                 if(len(acc) > 0):
                     adjacencies[elem] = acc
-    
-        if(self.tryVisiting(0, 0, hamiltonian, available, adjacencies) and hamiltonian.isCircuit()):
-            return hamiltonian
+        
+        def aux(vertex, totalvisited, Hamiltonian):
+            if(totalvisited == len(self.visitedV)):
+                if(vertex==Hamiltonian.getVertex(0)):
+                    Hamiltonian.addVertex(vertex)
+                    return True
+                else:
+                    return False
 
-        return None
-
-    def tryVisiting(self, vertex, totalvisited, Hamiltonian, available=[], adjacencies={}):
-        if(totalvisited == len(self.visitedV)):
-            if(vertex==Hamiltonian.getVertex(0)):
+            if(available[vertex]):
                 Hamiltonian.addVertex(vertex)
-                return True
+                self.visitedV[vertex] = True
+                available[vertex] = False
             else:
                 return False
 
-        if(available[vertex]):
-            Hamiltonian.addVertex(vertex)
-            self.visitedV[vertex] = True
-            available[vertex] = False
-        else:
+            topop=list(adjacencies[vertex])
+            for i in range(len(topop)):
+                popped=topop.pop(0)
+                if available[popped] or (popped == Hamiltonian.getVertex(0) and len(Hamiltonian) + 1 == self.totalV):
+                    if aux(popped, totalvisited+1, Hamiltonian):
+                        return True
+                    else:
+                        available[popped] = True
+                        Hamiltonian.removeLastVertex()
+                        topop.append(popped)
+                        self.visitedV[popped] = False
+
+            available[vertex] = True
+            self.visitedV[vertex] = False
+    
             return False
 
-        topop=list(adjacencies[vertex])
-        for i in range(len(topop)):
-            popped=topop.pop(0)
-            if available[popped] or (popped == Hamiltonian.getVertex(0) and len(Hamiltonian) + 1 == self.totalV):
-                if self.tryVisiting(popped, totalvisited+1, Hamiltonian, available, adjacencies):
-                    return True
-                else:
-                    available[popped] = True
-                    Hamiltonian.removeLastVertex()
-                    topop.append(popped)
-                    self.visitedV[popped] = False
+        return aux(vertex, totalvisited, Hamiltonian)
 
-        available[vertex] = True
-        self.visitedV[vertex] = False
- 
-        return False
-    

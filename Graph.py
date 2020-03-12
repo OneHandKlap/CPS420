@@ -235,7 +235,7 @@ class Graph:
     #                   DO NOT MODIFY FILE ABOVE THIS LINE
     #####################################  SOLUTION  ##########################################
     '''
-    Solution by:
+    Solution by Group A2 198
     Christian Wang - 500890567
     P. Adam Aboud - 500883647
 
